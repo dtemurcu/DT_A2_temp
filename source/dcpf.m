@@ -1,6 +1,6 @@
-function [delta, Pslack, Pflow] = dcpf(nfrom, nto, x, is, Pg, Pd, Sbase)
+function [delta, Psl, Pf] = dcpf(nfrom, nto, x, is, Pg, Pd, Sbase)
 % Deniz Temurcu 261089503
-% This function performs DC (linear) power flow
+% This function performs DC (linear) power flow 
 
 % Our inputs:
 % nfrom is the vector of sending-end bus indices (m x 1, 1-based)
@@ -15,7 +15,7 @@ function [delta, Pslack, Pflow] = dcpf(nfrom, nto, x, is, Pg, Pd, Sbase)
 % delta is the vector of bus voltage angles (rad, n x 1) with delta(is)=0
 % Psl   is the slack-bus active generation (MW)
 % Pf    is the vector of branch active power flows From->To (MW, m x 1)
-%
+
 
 % size check
 n = max(max(nfrom), max(nto)); % get the number of buses
@@ -39,9 +39,9 @@ end
 % B' is the susceptance matrix considering only series reactances (neglecting resistance and shunts)
 w  = 1 ./ x; % vector of series susceptances (b = 1/x)
 
-% b B' efficiently using sparse matrix operations
+% build B' efficiently using sparse matrix operations
 % off-diagonal elements: B'_ij = -b_ij
-% diagonal elements: B'_ii = sum_{k connected to i} b_ik
+% diagonal elements: B'_ii = sum_{k connectd to i} b_ik
 Bp = sparse(nfrom, nto, -w, n, n);   % populate off-diagonal (-w) for i->j
 Bp = Bp + sparse(nto, nfrom, -w, n, n);   % populate off-diagonal (-w) for j->i (symmetry)
 diagonal_elements = -sum(Bp, 2);          % calculate diagonal elements as negative sum of off-diagonals in the row
@@ -63,14 +63,13 @@ delta(angle_ix) = Bp_reduced \ rhs_reduced; % solve using backslash operator
 Pinjection_calc = Bp * delta; % p.u. calculated injections
 
 % slack bus power calculation
-Pslack = Pinjection_calc(is) * Sbase + Pd(is); % Slack power in MW (Calculated Injection + Slack Demand)
+Psl = Pinjection_calc(is) * Sbase + Pd(is); % Slack power in MW (Calculated Injection + Slack Demand)
 
 % branch flow calculation
-Pflow  = ((delta(nfrom) - delta(nto)) ./ x) * Sbase; % Branch flows in MW: (delta_i - delta_j) / x_ij * Sbase
+Pf  = ((delta(nfrom) - delta(nto)) ./ x) * Sbase; % Branch flows in MW: (delta_i - delta_j) / x_ij * Sbase
 
 % ensure slack angle is exactly zero (reference)
 delta = delta - delta(is);
 delta(is) = 0;
-
 
 end
