@@ -1,6 +1,6 @@
 function [V, delta, Pslack, Qgv, N, time] = decpf(Y, is, ipq, ipv, Pg, Qg, Pd, Qd, V0, Sbase, toler, maxiter)
 % Deniz Temurcu 261089503
-% This function performs Decoupled Newton power flow (block-diagonal Jacobian in polar form)
+% This function performs Decoupled Newton power flow
 
 % Our inputs:
 % Y      is the bus admittance matrix (n x n, complex)
@@ -126,5 +126,6 @@ Qgv = Qcalc(ipv) * Sbase + Qd(ipv); % PV reactive power in Mvar
 % wnsure slack angle is exactly zero (reference)
 delta = delta - delta(is);
 delta(is) = 0;
+
 
 end
