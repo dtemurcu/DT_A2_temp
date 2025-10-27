@@ -1,7 +1,6 @@
-function [V, delta, Pslack, Qgv, N, time] = decpf(Y, is, ipq, ipv, Pg, Qg, Pd, Qd, V0, Sbase, toler, maxiter)
+function [V, delta, Psl, Qgv, N, time] = decpf(Y, is, ipq, ipv, Pg, Qg, Pd, Qd, V0, Sbase, toler, maxiter)
 % Deniz Temurcu 261089503
-% This function performs Decoupled Newton power flow
-
+% This function performs Decoupled Newton power flow 
 % Our inputs:
 % Y      is the bus admittance matrix (n x n, complex)
 % is     is the slack bus index (scalar, 1-based)
@@ -72,7 +71,7 @@ for k = 1:maxiter
     dQ = Qinjection - Q;
 
     % convergence
-    % Check ∞-norm of mismatches for the relevant subsystems
+    % check ∞-norm of mismatches for the relevant subsystems
     if max([norm(dP(angle_ix),inf), norm(dQ(vmag_ix),inf)]) <= toler
         N = k - 1; % record last successful iteration number
         break      % exit loop if converged
@@ -96,12 +95,12 @@ for k = 1:maxiter
     end
 
     % extract submatrices for the reduced decoupled systems
-    Hs = H(angle_ix, angle_ix);         % Relevant H block (angles)
-    Ls = Lblk(vmag_ix, vmag_ix);        % Relevant L block (magnitudes at PQ buses)
+    Hs = H(angle_ix, angle_ix);         % relevant H block (angles)
+    Ls = Lblk(vmag_ix, vmag_ix);        % relevant L block (magnitudes at PQ buses)
 
     % solve linear system
-    ddelta = Hs \ dP(angle_ix);      % Solve Hs * ddelta = dP
-    dV     = Ls \ dQ(vmag_ix);      % Solve Ls * dV = dQ (I renamed the variable for clarity)
+    ddelta = Hs \ dP(angle_ix);      % solve Hs * ddelta = dP
+    dV     = Ls \ dQ(vmag_ix);      % solve Ls * dV = dQ 
 
     % update
     delta(angle_ix) = delta(angle_ix) + ddelta;       % update angles
@@ -119,13 +118,12 @@ Pcalc = real(Scalc);
 Qcalc = imag(Scalc);
 
 % calculate slack bus power and PV bus reactive power
-Pslack = Pcalc(is) * Sbase + Pd(is);   % slack active power in MW
+Psl = Pcalc(is) * Sbase + Pd(is);   % slack active power in MW
 Qgv = Qcalc(ipv) * Sbase + Qd(ipv); % PV reactive power in Mvar
 
 % output
 % wnsure slack angle is exactly zero (reference)
 delta = delta - delta(is);
 delta(is) = 0;
-
 
 end
