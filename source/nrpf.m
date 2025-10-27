@@ -1,4 +1,4 @@
-function [V, delta, Pslack, Qgv, N, time] = nrpf(Y, is, ipq, ipv, Pg, Qg, Pd, Qd, V0, Sbase, toler, maxiter)
+function [V, delta, Psl, Qgv, N, time] = nrpf(Y, is, ipq, ipv, Pg, Qg, Pd, Qd, V0, Sbase, toler, maxiter)
 % Deniz Temurcu 261089503
 % This function performs Full Newton–Raphson power flow 
 
@@ -130,12 +130,11 @@ Pcalc = real(Scalc);
 Qcalc = imag(Scalc);
 
 % calculate slack bus power and PV bus reactive power
-Pslack = Pcalc(is) * Sbase + Pd(is);     % Slack active power in MW
+Psl = Pcalc(is) * Sbase + Pd(is);     % Slack active power in MW
 Qgv = Qcalc(ipv) * Sbase + Qd(ipv);   % PV reactive power in Mvar
 
 % ensure slack angle is exactly zero (reference)
 delta = delta - delta(is);
 delta(is) = 0;
-
 
 end
