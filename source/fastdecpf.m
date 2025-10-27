@@ -1,6 +1,7 @@
-function [V, delta, Pslack, Qgv, N, time] = fastdecpf(Y, is, ipq, ipv, Pg, Qg, Pd, Qd, V0, Sbase, toler, maxiter)
+function [V, delta, Psl, Qgv, N, time] = fastdecpf(Y, is, ipq, ipv, Pg, Qg, Pd, Qd, V0, Sbase, toler, maxiter)
 % Deniz Temurcu 261089503
-% This function performs Fast–Decoupled Power Flow 
+% This function performs Fast–Decoupled Power Flow
+
 % Our inputs:
 % Y      is the bus admittance matrix (n x n, complex)
 % is     is the slack bus index (scalar, 1-based)
@@ -114,13 +115,12 @@ Pcalc = real(Scalc);
 Qcalc = imag(Scalc);
 
 % calculate slack bus power and PV bus reactive power
-Pslack = Pcalc(is) * Sbase + Pd(is);       % Slack active power in MW
+Psl = Pcalc(is) * Sbase + Pd(is);       % Slack active power in MW
 Qgv = Qcalc(ipv) * Sbase + Qd(ipv);     % PV reactive power in Mvar
 
 % output
 % ensure slack angle is exactly zero (reference)
 delta = delta - delta(is);
 delta(is) = 0;
-
 
 end
