@@ -1,6 +1,6 @@
 function [delta, Pslack, Pflow] = dcpf(nfrom, nto, x, is, Pg, Pd, Sbase)
 % Deniz Temurcu 261089503
-% This function performs DC (linear) power flow using branch reactances (series-only B')
+% This function performs DC (linear) power flow
 
 % Our inputs:
 % nfrom is the vector of sending-end bus indices (m x 1, 1-based)
@@ -71,5 +71,6 @@ Pflow  = ((delta(nfrom) - delta(nto)) ./ x) * Sbase; % Branch flows in MW: (delt
 % ensure slack angle is exactly zero (reference)
 delta = delta - delta(is);
 delta(is) = 0;
+
 
 end
